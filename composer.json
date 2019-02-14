@@ -1,0 +1,41 @@
+{
+    "name": "adhocore/plastic",
+    "description": "",
+    "type": "library",
+    "keywords": ["php","plastic","elastic","elasticsearch","php7"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jitendra Adhikari",
+            "email": "jiten.adhikary@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ahc\\Plastic\\": "src/"
+        },
+        "files": []
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ahc\\Plastic\\Test\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        }
+    },
+    "scripts": {
+        "post-root-package-install": [
+        ],
+        "test": "vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml"
+    }
+}
