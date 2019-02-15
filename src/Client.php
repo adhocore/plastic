@@ -7,19 +7,25 @@ class Client
     protected $segments = [];
     protected $method   = 'GET';
     protected $pretty   = \false;
-    protected $verbs    = ['GET', 'POST', 'PUT', 'DELETE'];
+    protected $hasBody  = \false;
+    protected $host     = 'http://localhost:9200';
+    protected $verbs    = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD'];
 
-    public function __construct(bool $pretty = \false)
+    public function __construct(string $host = \null, bool $pretty = \false)
     {
+        if ($host !== null) {
+            $this->host = $host;
+        }
+
         $this->pretty = $pretty;
     }
 
     public function __get(string $key): self
     {
         if (\in_array($verb = \strtoupper($key), $this->verbs, \true)) {
-            $this->method = $verb;
+            $this->reset($verb);
         } else {
-            $this->segments[] = $key;
+            $this->segments[] = $this->getPart($key);
         }
 
         return $this;
@@ -27,44 +33,73 @@ class Client
 
     public function __call(string $method, array $data = [])
     {
-        $this->segments[] = \ltrim($method, '_');
+        $this->segments[] = $this->getPart($method);
 
-        $segments = \implode('/', $this->segments);
-        $method   = $this->method;
+        list($data, $params) = $this->prepareData($data);
 
+        return $this->call($data, $params);
+    }
+
+    protected function reset(string $verb)
+    {
         $this->segments = [];
-        $this->method   = 'GET';
-
-        return $this->call($method, $segments, $this->prepare($method, $data));
+        $this->method   = $verb;
+        $this->hasBody  = $verb === 'POST' || $verb === 'PUT';
     }
 
-    private function prepare(string $method, array $data): string
+    protected function getPart(string $part): string
     {
-        if (empty($data[0])) {
-            return '';
-        }
-
-        if ($method === 'GET') {
-            return \http_build_query($data[0]);
-        } elseif ($method === 'POST') {
-            return \json_encode($data[0]);
-        }
+        return \preg_match('/^_(\d+)$/', $part) ? \substr($part, 1) : $part;
     }
 
-    private function call(string $method, string $segments, string $data)
+    protected function prepareData(array $data): array
     {
-        $curl = "curl --silent -X $method 'http://localhost:9200/$segments?";
-
         if ($this->pretty) {
-            $curl .= 'pretty=true&';
+            $data[1]['pretty'] = 'true';
         }
 
-        if ($method === 'GET') {
-            $curl .= $data . "'";
-        } elseif ($method === 'POST') {
-            $curl .= "' -H 'content-type: application/json' -d '$data'";
+        $params = empty($data[1]) ? '' : $this->asQuery($data[1]);
+        $data   = empty($data[0]) ? '' : $this->serialize($data[0]);
+
+        return [$data, $params];
+    }
+
+    protected function serialize($data): string
+    {
+        $data = $this->hasBody ? $this->asJson($data) : $this->asQuery($data);
+        $data = \str_replace('"', '\"', $data);
+
+        return $data;
+    }
+
+    protected function asJson($data): string
+    {
+        return \json_encode($data);
+    }
+
+    protected function asQuery($data): string
+    {
+        return \http_build_query($data);
+    }
+
+    protected function call(string $data, string $params)
+    {
+        $curl = "curl --silent -X {$this->method}";
+        $url  = "{$this->host}/{$this->uri()}?{$params}";
+
+        if ($this->hasBody) {
+            $curl .= ' -H "content-type: application/json" -d "' . $data . '"';
+        } else {
+            $url .= "&{$data}";
         }
 
-        return shell_exec($curl);
+        $curl .= ' "' . $url . '"';
+
+        return \shell_exec($curl);
+    }
+
+    protected function uri(): string
+    {
+        return \implode('/', $this->segments);
     }
 }
