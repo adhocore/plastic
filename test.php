@@ -15,7 +15,7 @@ $schools = [[
 ],
 ];
 
-$client = new Ahc\Plastic\Client(true);
+$client = new Ahc\Plastic\Client(null, true);
 
 foreach ($schools as $school) {
     $id = (string) $school['id'];
@@ -26,3 +26,20 @@ foreach ($schools as $school) {
     // find a school by id
     echo $client->get->schools->school->$id();
 }
+
+echo $client->put->_cluster->settings([
+    'persistent' => ['action.auto_create_index' => 'true'],
+]);
+
+$school3 = [
+    'id'   => '3',
+    'name' => 'City School 3',
+    'addr' => 'City 3, Street 3, Province 3, Country 3',
+    'tags' => ['school', '3'],
+];
+
+// Create using put
+echo $client->put->schools->school->_3($school3, ['op_type' => 'create']);
+
+// Get only source
+echo $client->get->schools->school->_3->_source();
