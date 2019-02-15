@@ -6,7 +6,7 @@ PHP elasticsearch wrapper designed to be minimal, intuitive and dependency free.
 [![Travis Build](https://img.shields.io/travis/com/adhocore/plastic.svg?branch=master&style=flat-square)](https://travis-ci.com/adhocore/plastic?branch=master)
 [![Scrutinizer CI](https://img.shields.io/scrutinizer/g/adhocore/plastic.svg?style=flat-square)](https://scrutinizer-ci.com/g/adhocore/plastic/?branch=master)
 [![Codecov branch](https://img.shields.io/codecov/c/github/adhocore/plastic/master.svg?style=flat-square)](https://codecov.io/gh/adhocore/plastic)
-[![StyleCI](https://styleci.io/repos/{styleci}/shield)](https://styleci.io/repos/{styleci})
+[![StyleCI](https://styleci.io/repos/169875680/shield)](https://styleci.io/repos/169875680)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](./LICENSE)
 
 
