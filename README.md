@@ -24,17 +24,20 @@ use Ahc\Plastic\Client;
 $client = new Ahc\Plastic\Client(null, true);
 
 # Usage convention:
-$client->{$httpMethod}->$segment1->$segment2->$method($data);
+$client->{$httpMethod}->$segment1->$segment2->$method($data, $query);
 
-# For numeric segment or method, prepend with `_`.
+# For numeric segment or method, prepend with `_`!
+# (this is because PHP doesnt allow numeric method or props without some hack)
 
 # Example:
-$client->post->articles->article->_1(['key' => 'value']);
+$client->post->articles->article->_1(['json_key' => 'value'], ['query' => 'param']);
 ```
 
 See [./test.php](./test.php) for more.
 
 ## API
+
+There is none. It works analagous to the RESTful API of [elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs.html).
 
 <!-- DOCS START -->
 <!-- DOCS END -->
