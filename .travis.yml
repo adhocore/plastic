@@ -15,10 +15,14 @@ matrix:
   allow_failures:
     - php: nightly
 
+services:
+  - elasticsearch
+
 install:
   - composer install --prefer-dist
 
 before_script:
+  - sleep 10
   - for P in src tests; do find $P -type f -name '*.php' -exec php -l {} \;; done
 
 script:
